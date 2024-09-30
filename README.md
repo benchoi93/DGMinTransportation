@@ -7,7 +7,7 @@ All code is provided in Python Jupyter Notebook format and can be executed in Go
 ### Citations
 If you use this code for your research, please cite our paper.
 
-```bash
+```bibtex
 @article{choi2024DGMTR,
   title={A Gentle Introduction and Tutorial on Deep Generative Models in Transportation Research},
   author={Choi, Seongjin and Jin, Zhixiong and Ham, Seungwoo and Kim, Jiwon and Sun, Lijun},

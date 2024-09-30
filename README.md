@@ -8,14 +8,11 @@ All code is provided in Python Jupyter Notebook format and can be executed in Go
 If you use this code for your research, please cite our paper.
 
 ```bash
-@article{choi2021trajgail,
-  title={TrajGAIL: Generating urban vehicle trajectories using generative adversarial imitation learning},
-  author={Choi, Seongjin and Kim, Jiwon and Yeo, Hwasoo},
-  journal={Transportation Research Part C: Emerging Technologies},
-  volume={128},
-  pages={103091},
-  year={2021},
-  publisher={Elsevier}
+@article{choi2024DGMTR,
+  title={A Gentle Introduction and Tutorial on Deep Generative Models in Transportation Research},
+  author={Choi, Seongjin and Jin, Zhixiong and Ham, Seungwoo and Kim, Jiwon and Sun, Lijun},
+  journal={arXiv preprint},
+  year={2024}
 }
 ```
 

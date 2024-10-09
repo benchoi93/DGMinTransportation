@@ -1,6 +1,6 @@
 # Tutorials on Deep Generative Models in Transportation Research
-This repository contains tutorials demonstrating the use of deep generative models in transportation research, as presented in the paper "_A Gentle Introduction and Tutorial on Deep Generative Models in Transportation Research_". 
-The examples provided focus on two foundational data in transportation research: 1) travel survey data and 2) highway speed contour data. Each example is designed to help researchers in the transportation field apply generative models to their own projects.
+This repository contains tutorials presenting the use of deep generative models in transportation research, as presented in the paper "_A Gentle Introduction and Tutorial on Deep Generative Models in Transportation Research_". 
+The examples focus on two key types of data commonly used in transportation research: 1) travel survey data and 2) highway speed contour data (Time-Space diagrams). Each tutorial is designed to guide transportation researchers in applying deep generative models to their projects.
 
 All code is provided in Python Jupyter Notebook format and can be executed in Google Colab for easy access and experimentation.
 

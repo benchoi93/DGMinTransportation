@@ -17,12 +17,12 @@ If you use this code for your research, please cite our paper.
 ```
 
 ## Travel Survey Data Generation Example (TravelSurvey folder; Section 4.1 in the paper)
-In this example, we demonstrate the generation of synthetic travel survey data using deep generative models.
+In this example, we present the generation of synthetic travel survey data using deep generative models.
 
 preprocessed data : [https://drive.google.com/drive/folders/1zi3KmBC1_XSK6neEIRBgf7vJlGBNeh8C?usp=sharing](https://drive.google.com/drive/folders/1zi3KmBC1_XSK6neEIRBgf7vJlGBNeh8C?usp=sharing)
 
 ## Time Space Diagram Generation Example (TimeSpaceDiagram folder; Section 4.2 in the paper)
-In this example, we demonstrate the generation of synthetic time-space diagrams using deep generative models.
+In this example, we present the generation of synthetic time-space diagrams using deep generative models.
 
 preprocessed data : [https://drive.google.com/drive/folders/1EndLnkkhRBFxxMSqKZFYZzHHzKJ_SZaM?usp=sharing](https://drive.google.com/drive/folders/1EndLnkkhRBFxxMSqKZFYZzHHzKJ_SZaM?usp=sharing)
 

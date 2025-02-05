@@ -15,7 +15,7 @@ def load_and_preprocess_data(data_path, batch_size):
         for j in range(8):
             idx = torch.randint(dataset.shape[0], (1,)).item()
             img = dataset[idx][0].numpy()  # numpy array, shape: (64,64)
-            ax[i, j].imshow(img, origin="lower", cmap="gray")
+            ax[i, j].imshow(img, origin="lower", cmap="viridis")
             ax[i, j].axis("off")
     plt.suptitle("Random Samples from Dataset", fontsize=16)
     plt.show()

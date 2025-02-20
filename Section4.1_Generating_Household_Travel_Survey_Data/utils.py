@@ -4,6 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import torch
+from scipy.stats import entropy
 
 # -------------------------------
 # Dequantization of data
@@ -85,3 +86,98 @@ def visualize_results(model_name, ground_truth_df, generated_df, columns, xtick_
     plt.savefig(os.path.join(save_dir, f'{model_name}_discrete.png'), bbox_inches='tight', dpi=400)
     plt.show()
     plt.close()
+
+# -------------------------------
+# Evaluation Metrics
+# -------------------------------
+
+def calculate_mse(real_data: np.ndarray, generated_data: np.ndarray) -> float:
+    """
+    Calculate Mean Squared Error.
+    
+    Args:
+        real_data: Real data distribution
+        generated_data: Generated data distribution
+        
+    Returns:
+        float: MSE value
+    """
+    return np.mean((real_data - generated_data) ** 2)
+
+def calculate_mae(real_data: np.ndarray, generated_data: np.ndarray) -> float:
+    """
+    Calculate Mean Absolute Error.
+    
+    Args:
+        real_data: Real data distribution
+        generated_data: Generated data distribution
+        
+    Returns:
+        float: MAE value
+    """
+    return np.mean(np.abs(real_data - generated_data))
+
+def calculate_kld(real_data: np.ndarray, generated_data: np.ndarray) -> float:
+    """
+    Calculate KL Divergence.
+    
+    Args:
+        real_data: Real data distribution
+        generated_data: Generated data distribution
+        
+    Returns:
+        float: KLD value
+    """
+    # Add small value to prevent division by zero
+    epsilon = 1e-10
+    real_data = real_data + epsilon
+    generated_data = generated_data + epsilon
+    
+    # Normalize to probability distributions
+    real_dist = real_data / np.sum(real_data)
+    generated_dist = generated_data / np.sum(generated_data)
+    
+    return entropy(real_dist, generated_dist)
+
+def evaluate_model(ground_truth_df, generated_df, columns):
+    """
+    Evaluate model performance using relative frequencies and return aggregated metric results.
+    
+    Args:
+        ground_truth_df: Real data DataFrame
+        generated_df: Generated data DataFrame
+        columns: List of column names to evaluate
+        
+    Returns:
+        tuple: Average MSE, MAE, and KLD values across all columns (computed on relative frequency distributions)
+    """
+    total_mse = 0
+    total_mae = 0
+    total_kld = 0
+
+    for col in columns:
+
+        unique_categories = np.union1d(ground_truth_df[col].unique(), generated_df[col].unique())
+        
+        gt_counts = ground_truth_df[col].value_counts().reindex(unique_categories, fill_value=0).sort_index().values.astype(float)
+        gen_counts = generated_df[col].value_counts().reindex(unique_categories, fill_value=0).sort_index().values.astype(float)
+        
+        gt_prop = gt_counts / np.sum(gt_counts)
+        gen_prop = gen_counts / np.sum(gen_counts)
+        
+        total_mse += calculate_mse(gt_prop, gen_prop)
+        total_mae += calculate_mae(gt_prop, gen_prop)
+        total_kld += calculate_kld(gt_prop, gen_prop)
+    
+    num_columns = len(columns)
+    avg_mse = total_mse / num_columns
+    avg_mae = total_mae / num_columns
+    avg_kld = total_kld / num_columns
+
+    print("\nAggregate Performance Metrics:")
+    print("-" * 50)
+    print(f"Average MSE: {avg_mse:.7f}")
+    print(f"Average MAE: {avg_mae:.7f}")
+    print(f"Average KLD: {avg_kld:.7f}")
+    
+    return avg_mse, avg_mae, avg_kld

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FormatStrFormatter
 import torch
 from scipy.stats import entropy
+from itertools import combinations
 
 # -------------------------------
 # Dequantization of data
@@ -139,6 +140,74 @@ def calculate_kld(real_data: np.ndarray, generated_data: np.ndarray) -> float:
     
     return entropy(real_dist, generated_dist)
 
+def calculate_srmse(real_dist: np.ndarray, gen_dist: np.ndarray) -> float:
+    """
+    SRMSE = RMSE / (sum(real_counts)/N_b)
+    RMSE = sqrt( (1/N_b) * Σ (gen_counts - real_counts)^2 )
+
+    Args:
+        real_dist: The real distribution (a vector summing to 1)
+        gen_dist:  The generated distribution (a vector summing to 1)
+    Returns:
+        float: SRMSE value
+    """
+    # Number of bins
+    N_b = len(real_dist)
+
+    # Compute RMSE
+    # Calculate the difference between the two distributions
+    diff = real_dist - gen_dist
+    rmse = np.sqrt(np.sum(diff ** 2)/N_b)
+    
+    # average probability
+    avg_pi = np.sum(real_dist) / N_b
+    
+    # SRMSE scaling
+    srmse_value = rmse / avg_pi
+    
+    return srmse_value
+
+def calculate_srmse_for_columns(ground_truth_df: pd.DataFrame,
+                                generated_df: pd.DataFrame,
+                                cols: list) -> float:
+    """
+    For the given cols (e.g., two columns), compute the multi-dimensional cross distribution 
+    and then calculate the SRMSE.
+
+    Args:
+        ground_truth_df: The real DataFrame
+        generated_df:    The generated DataFrame
+        cols:            A list of columns (usually 2) to compute SRMSE for
+        
+    Returns:
+        float: The SRMSE value for the combination of the specified columns
+    """
+    # (1) Get group counts for the specified columns in the real data
+    real_counts = ground_truth_df.groupby(cols).size()
+    # (2) Get group counts for the specified columns in the generated data
+    gen_counts = generated_df.groupby(cols).size()
+
+    # Combine all possible category combinations (from both real and generated data) 
+    # to expand the index
+    unique_combos = pd.Index(list(set(real_counts.index) | set(gen_counts.index)))
+    
+    # Fill missing combinations with 0 via reindex
+    real_counts = real_counts.reindex(unique_combos, fill_value=0).sort_index()
+    gen_counts = gen_counts.reindex(unique_combos, fill_value=0).sort_index()
+    
+    # Convert to float
+    real_counts = real_counts.values.astype(float)
+    gen_counts = gen_counts.values.astype(float)
+    
+    # Normalize each distribution to sum to 1
+    real_dist = real_counts / real_counts.sum()
+    gen_dist  = gen_counts / gen_counts.sum()
+    
+    # Calculate SRMSE
+    srmse_val = calculate_srmse(real_dist, gen_dist)
+    return srmse_val
+
+
 def evaluate_model(ground_truth_df, generated_df, columns):
     """
     Evaluate model performance using relative frequencies and return aggregated metric results.
@@ -179,5 +248,21 @@ def evaluate_model(ground_truth_df, generated_df, columns):
     print(f"Average MSE: {avg_mse:.7f}")
     print(f"Average MAE: {avg_mae:.7f}")
     print(f"Average KLD: {avg_kld:.7f}")
+
+    # Calculate for (4C2 = 6) combinations 
+    two_col_combinations = list(combinations(columns, 2))
+    srmse_dict = {}
     
-    return avg_mse, avg_mae, avg_kld
+    for combo in two_col_combinations:
+        # combo ex): ('start_type', 'act_num')
+        srmse_val = calculate_srmse_for_columns(ground_truth_df, generated_df, list(combo))
+        srmse_dict[combo] = srmse_val
+    
+    print("\nSRMSE for 2-Column Combinations:")
+    print("-" * 50)
+    for k, v in srmse_dict.items():
+        print(f"{k}: {v:.7f}")
+    avg_srmse = np.mean(list(srmse_dict.values()))
+    print(f"\n[Average SRMSE across all {len(two_col_combinations)} combos] = {avg_srmse:.7f}")
+    
+    return avg_mse, avg_mae, avg_kld, srmse_dict

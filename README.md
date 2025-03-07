@@ -1,4 +1,11 @@
 # Tutorials on Deep Generative Models in Transportation Research
+
+**This repo is not maintained anymore**. Please visit [https://github.com/UMN-Choi-Lab/DGMinTransportation](https://github.com/UMN-Choi-Lab/DGMinTransportation)
+
+
+
+
+
 This repository contains tutorials presenting the use of deep generative models in transportation research, as presented in the paper "_A Gentle Introduction and Tutorial on Deep Generative Models in Transportation Research_". 
 The examples focus on two key types of data commonly used in transportation research: 1) travel survey data and 2) highway speed contour data (Time-Space diagrams). Each tutorial is designed to guide transportation researchers in applying deep generative models to their projects.
 
